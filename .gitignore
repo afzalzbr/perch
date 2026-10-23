@@ -1,0 +1,15 @@
+node_modules
+.next
+.turbo
+dist
+coverage
+.env
+.env.local
+.env.*.local
+uploads
+uploads-e2e
+*.log
+.DS_Store
+playwright-report
+test-results
+.vscode
