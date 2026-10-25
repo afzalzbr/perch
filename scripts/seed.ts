@@ -1,5 +1,4 @@
 import bcrypt from "bcryptjs";
-import pg from "pg";
 import { randomUUID } from "node:crypto";
 
 type SeedOptions = {
@@ -7,8 +6,54 @@ type SeedOptions = {
   variant?: "happy" | "empty";
 };
 
+type SqlClient = {
+  query: (text: string, params?: unknown[]) => Promise<{ rows: unknown[] }>;
+  end: () => Promise<void>;
+};
+
+function isNeonUrl(url: string): boolean {
+  try {
+    return new URL(url).hostname.endsWith(".neon.tech");
+  } catch {
+    return false;
+  }
+}
+
+async function makeClient(url: string): Promise<SqlClient> {
+  if (isNeonUrl(url)) {
+    const { Pool, neonConfig } = await import("@neondatabase/serverless");
+    const WS = (await import("ws")).default;
+    const proxyUrl = process.env.HTTPS_PROXY || process.env.https_proxy;
+    let wsCtor: unknown = WS;
+    if (proxyUrl) {
+      const { HttpsProxyAgent } = await import("https-proxy-agent");
+      const agent = new HttpsProxyAgent(proxyUrl);
+      const Base = WS as unknown as new (...a: unknown[]) => object;
+      wsCtor = class ProxiedWS extends Base {
+        constructor(address: unknown, protocols?: unknown, options?: Record<string, unknown>) {
+          super(address, protocols, { ...(options ?? {}), agent });
+        }
+      };
+    }
+    (neonConfig as unknown as { webSocketConstructor?: unknown }).webSocketConstructor = wsCtor;
+    const pool = new Pool({ connectionString: url, max: 1 });
+    return {
+      query: async (t: string, p?: unknown[]) => (await pool.query(t, p)) as { rows: unknown[] },
+      end: () => pool.end(),
+    };
+  }
+  const pg = await import("pg");
+  const c = new pg.default.Client({ connectionString: url });
+  await c.connect();
+  return {
+    query: (t: string, p?: unknown[]) => c.query(t, p) as Promise<{ rows: unknown[] }>,
+    end: () => c.end(),
+  };
+}
+
 async function main(): Promise<void> {
-  const dbUrl = process.env.DATABASE_URL;
+  // Seed can run against the direct URL — it's a one-shot admin task.
+  const dbUrl = process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL;
   if (!dbUrl) {
     console.error("DATABASE_URL is not set");
     process.exit(1);
@@ -16,8 +61,7 @@ async function main(): Promise<void> {
   const variant = (process.env.PERCH_SEED_VARIANT as SeedOptions["variant"]) ?? "happy";
   const includeClicks = (process.env.PERCH_SEED_CLICKS ?? "1") !== "0";
 
-  const client = new pg.Client({ connectionString: dbUrl });
-  await client.connect();
+  const client = await makeClient(dbUrl);
 
   // Reset data (keep schema).
   await client.query(
@@ -28,10 +72,10 @@ async function main(): Promise<void> {
   const password = process.env.PERCH_SEED_PASSWORD ?? "superSecret1";
   const hash = await bcrypt.hash(password, 10);
 
-  const { rows: userRows } = await client.query<{ id: string }>(
+  const { rows: userRows } = (await client.query(
     `INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id`,
     [email, hash]
-  );
+  )) as { rows: Array<{ id: string }> };
   const userId = userRows[0].id;
 
   const profileId = randomUUID();

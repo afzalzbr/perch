@@ -1,24 +1,23 @@
 import { NextResponse } from "next/server";
-import { getPool } from "@/db";
+import { db } from "@/db";
+import { sql } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function GET() {
   let dbOk = false;
+  let dbError: string | undefined;
   try {
-    const client = await getPool().connect();
-    try {
-      await client.query("SELECT 1");
-      dbOk = true;
-    } finally {
-      client.release();
+    await db.execute(sql`SELECT 1`);
+    dbOk = true;
+  } catch (err) {
+    if (process.env.NODE_ENV !== "production") {
+      dbError = err instanceof Error ? err.message : String(err);
     }
-  } catch {
-    dbOk = false;
   }
   return NextResponse.json(
-    { ok: dbOk, service: "perch", time: new Date().toISOString() },
+    { ok: dbOk, service: "perch", time: new Date().toISOString(), ...(dbError ? { dbError } : {}) },
     { status: dbOk ? 200 : 503 }
   );
 }

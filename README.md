@@ -78,6 +78,23 @@ See `.env.example`. The required ones:
 - Migrations live in `drizzle/` as hand-authored SQL and are applied in filename order.
 - `scripts/migrate.ts` is a tiny runner that records applied files in a `schema_migrations` table — no Drizzle Kit CLI dependency at runtime.
 - The schema is also mirrored as a Drizzle `pgTable` definition in `src/db/schema.ts` so queries get types; a `drizzle.config.ts` is included for anyone who prefers to generate migrations with Drizzle Kit instead.
+- `src/db/index.ts` auto-detects the driver from the connection string: a `*.neon.tech` host uses `@neondatabase/serverless` (HTTPS/WebSocket), everything else uses `pg`. Force one with `PERCH_DB_DRIVER=neon-serverless|node-postgres`. Migrations and the seed script prefer `DATABASE_URL_UNPOOLED` when present, per [Neon's connection guidance](https://neon.com/docs/connect/choose-connection.md).
+
+### Setting up on Neon
+
+```bash
+npm i -g neon@latest
+neon login                                   # or export NEON_API_KEY=...
+neon init -y --org-id <org> --project-id <project> \
+            --branch production --services postgres
+neon deploy                                  # pulls DATABASE_URL + DATABASE_URL_UNPOOLED into .env.local
+node --env-file=.env.local --import tsx scripts/migrate.ts
+node --env-file=.env.local --import tsx scripts/seed.ts    # optional
+npm run build
+node --env-file=.env.local node_modules/.bin/next start
+```
+
+If the host only allows HTTPS egress (no raw TCP on 5432), the driver reads `HTTPS_PROXY` and tunnels the WebSocket through it.
 
 ## Testing
 
