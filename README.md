@@ -124,6 +124,21 @@ Perch is a plain Next.js 15 app. Any Node 20+ host works. A minimal production f
 4. `npm run build && npm start`.
 5. (Optional) Set `CLOUDFLARE_WEB_ANALYTICS_TOKEN` to opt into the public-page beacon.
 
+### Object storage on Cloudflare R2
+
+Create a **private** bucket (no public access policy — Perch always serves through time-limited presigned URLs), then an **Account** API token scoped to that bucket with Object Read & Write. Paste the three values Cloudflare shows into the env:
+
+```
+STORAGE_DRIVER=s3
+S3_BUCKET=<your bucket>
+S3_REGION=auto
+S3_ACCESS_KEY_ID=<Access Key ID>
+S3_SECRET_ACCESS_KEY=<Secret Access Key>
+S3_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
+```
+
+The S3 adapter (`src/lib/storage.ts`) uses the AWS SDK with `forcePathStyle: true`, which R2 requires. Backup is `aws s3 sync s3://<bucket> /backup --endpoint-url=https://<account-id>.r2.cloudflarestorage.com` or Cloudflare's bucket lifecycle policies.
+
 ### Backup and restore
 
 Everything that matters lives in Postgres plus the object store.
