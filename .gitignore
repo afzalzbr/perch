@@ -13,3 +13,4 @@ uploads-e2e
 playwright-report
 test-results
 .vscode
+.neon
