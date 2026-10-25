@@ -58,55 +58,62 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="daylight"]):not([data-theme="paper"]) {
-    --color-surface-page: #15130d;
-    --color-surface-raised: #1d1a12;
-    --color-surface-sunk: #0f0d08;
-    --color-surface-overlay: #1d1a12ee;
-    --color-border-soft: #2a2518;
-    --color-border-strong: #3d3522;
-    --color-ink-primary: #f3ede1;
-    --color-ink-secondary: #c6bda9;
-    --color-ink-muted: #9e9381;
-    --color-ink-inverse: #15130d;
-    --color-brand-500: #4f9680;
-    --color-brand-600: #71b89f;
-    --color-brand-100: #1f2e26;
-    --color-accent-500: #e3a46c;
-    --color-accent-100: #36281a;
-    --color-success-500: #7fb48d;
-    --color-warning-500: #e5b273;
-    --color-danger-500: #d78568;
-    --color-danger-100: #3a1e17;
-    --color-focus-ring: #71b89f;
+    --color-surface-page: #12100a;
+    --color-surface-raised: #211d14;
+    --color-surface-sunk: #0a0906;
+    --color-surface-overlay: #211d14ee;
+    --color-border-soft: #2e2819;
+    --color-border-strong: #43391f;
+    --color-ink-primary: #f5efe4;
+    --color-ink-secondary: #cfc6b0;
+    --color-ink-muted: #9c9280;
+    --color-ink-inverse: #12100a;
+    --color-brand-500: #5aa58d;
+    --color-brand-600: #7cc3aa;
+    --color-brand-100: #1f3029;
+    --color-accent-500: #e8a970;
+    --color-accent-100: #3a2a1b;
+    --color-success-500: #85bb90;
+    --color-warning-500: #e8b476;
+    --color-danger-500: #d8886b;
+    --color-danger-100: #3d2018;
+    --color-focus-ring: #7cc3aa;
     --color-scrim: #000000cc;
-    --shadow-focus: 0 0 0 3px rgba(113, 184, 159, 0.35);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.5), 0 1px 1px rgba(0,0,0,0.35);
+    --shadow-md: 0 6px 16px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.3);
+    --shadow-lg: 0 20px 48px rgba(0,0,0,0.55), 0 6px 16px rgba(0,0,0,0.35);
+    --shadow-focus: 0 0 0 3px rgba(124, 195, 170, 0.4);
   }
 }
 
 :root[data-theme="dusk"],
 .perch-theme-dusk {
-  --color-surface-page: #15130d;
-  --color-surface-raised: #1d1a12;
-  --color-surface-sunk: #0f0d08;
-  --color-surface-overlay: #1d1a12ee;
-  --color-border-soft: #2a2518;
-  --color-border-strong: #3d3522;
-  --color-ink-primary: #f3ede1;
-  --color-ink-secondary: #c6bda9;
-  --color-ink-muted: #9e9381;
-  --color-ink-inverse: #15130d;
-  --color-brand-500: #4f9680;
-  --color-brand-600: #71b89f;
-  --color-brand-100: #1f2e26;
-  --color-accent-500: #e3a46c;
-  --color-accent-100: #36281a;
-  --color-success-500: #7fb48d;
-  --color-warning-500: #e5b273;
-  --color-danger-500: #d78568;
-  --color-danger-100: #3a1e17;
-  --color-focus-ring: #71b89f;
+  /* A warmer, deeper dusk — page sits lower than raised so cards clearly lift. */
+  --color-surface-page: #12100a;
+  --color-surface-raised: #211d14;
+  --color-surface-sunk: #0a0906;
+  --color-surface-overlay: #211d14ee;
+  --color-border-soft: #2e2819;
+  --color-border-strong: #43391f;
+  --color-ink-primary: #f5efe4;
+  --color-ink-secondary: #cfc6b0;
+  --color-ink-muted: #9c9280;
+  --color-ink-inverse: #12100a;
+  --color-brand-500: #5aa58d;
+  --color-brand-600: #7cc3aa;
+  --color-brand-100: #1f3029;
+  --color-accent-500: #e8a970;
+  --color-accent-100: #3a2a1b;
+  --color-success-500: #85bb90;
+  --color-warning-500: #e8b476;
+  --color-danger-500: #d8886b;
+  --color-danger-100: #3d2018;
+  --color-focus-ring: #7cc3aa;
   --color-scrim: #000000cc;
-  --shadow-focus: 0 0 0 3px rgba(113, 184, 159, 0.35);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.5), 0 1px 1px rgba(0,0,0,0.35);
+  --shadow-md: 0 6px 16px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 20px 48px rgba(0,0,0,0.55), 0 6px 16px rgba(0,0,0,0.35);
+  --shadow-focus: 0 0 0 3px rgba(124, 195, 170, 0.4);
 }
 
 :root[data-theme="paper"],
@@ -321,16 +328,20 @@ a { color: inherit; }
   align-items: baseline;
 }
 .perch-field__required { color: var(--color-danger-500); font-weight: 700; }
-.perch-field__hint { color: var(--color-ink-muted); font-size: 12px; font-weight: 500; min-height: 16px; }
+.perch-field__hint { color: var(--color-ink-muted); font-size: 12px; font-weight: 500; min-height: 16px; line-height: 16px; }
+
+/* Shared input shell. Every editable surface in the app uses this height. */
 .perch-field__input-wrap {
   display: flex;
   align-items: center;
-  background: var(--color-surface-sunk);
+  background: color-mix(in oklab, var(--color-surface-sunk) 70%, transparent);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-md);
   padding: 0 var(--space-3);
-  transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+  min-height: 44px;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
 }
+.perch-field__input-wrap:hover { border-color: var(--color-ink-secondary); }
 .perch-field__input-wrap:focus-within {
   border-color: var(--color-focus-ring);
   box-shadow: var(--shadow-focus);
@@ -343,20 +354,58 @@ a { color: inherit; }
   padding-right: var(--space-2);
   border-right: 1px solid var(--color-border-soft);
   margin-right: var(--space-3);
+  flex-shrink: 0;
 }
+
+/* Inputs & selects all land on the same baseline height. */
 .perch-field__input {
   flex: 1;
+  width: 100%;
   min-width: 0;
   border: 0;
   background: transparent;
   color: var(--color-ink-primary);
   font: 400 15px/20px var(--font-sans);
-  padding: 12px 0;
+  padding: 0;
+  margin: 0;
   outline: none;
   font-family: inherit;
+  appearance: none;
 }
 .perch-field__input::placeholder { color: var(--color-ink-muted); }
-textarea.perch-field__input { padding: 10px 0; resize: vertical; min-height: 72px; font-family: var(--font-sans); }
+
+textarea.perch-field__input {
+  padding: 10px 0;
+  resize: vertical;
+  min-height: 72px;
+  font-family: var(--font-sans);
+  line-height: 22px;
+}
+/* Autoshape the textarea's input-wrap so it looks like a text area, not a short pill. */
+.perch-field--multiline .perch-field__input-wrap { min-height: 96px; align-items: stretch; padding: 10px var(--space-3); }
+.perch-field--multiline textarea.perch-field__input { padding: 0; }
+
+/* Native select: match height, kill default chrome, add a theme-aware chevron. */
+select.perch-field__input {
+  cursor: pointer;
+  padding-right: 24px;
+  position: relative;
+}
+select.perch-field__input::-ms-expand { display: none; }
+.perch-field__input-wrap:has(select) { position: relative; }
+.perch-field__input-wrap:has(select)::after {
+  content: "";
+  position: absolute;
+  right: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px; height: 12px;
+  pointer-events: none;
+  background: var(--color-ink-secondary);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><polyline points='6 9 12 15 18 9' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>") center/contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><polyline points='6 9 12 15 18 9' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>") center/contain no-repeat;
+}
+
 .perch-field__error {
   display: inline-flex;
   gap: 6px;
@@ -367,7 +416,10 @@ textarea.perch-field__input { padding: 10px 0; resize: vertical; min-height: 72p
 }
 .perch-field.is-error .perch-field__input-wrap {
   border-color: var(--color-danger-500);
-  background: var(--color-danger-100);
+  background: color-mix(in oklab, var(--color-danger-500) 10%, transparent);
+}
+.perch-field.is-error .perch-field__input-wrap:focus-within {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-danger-500) 25%, transparent);
 }
 
 /* Link card */
@@ -713,6 +765,51 @@ textarea.perch-field__input { padding: 10px 0; resize: vertical; min-height: 72p
   letter-spacing: -0.015em;
 }
 .app-metric-sm { font: 600 20px/24px var(--font-sans); color: var(--color-ink-primary); }
+
+.app-section-head {
+  margin: 0;
+  font: 500 16px/22px var(--font-display);
+  letter-spacing: -0.01em;
+  color: var(--color-ink-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.app-section-head::before {
+  content: "";
+  width: 14px;
+  height: 1px;
+  background: var(--color-border-strong);
+  display: inline-block;
+}
+
+/* ------------- Social list in editor ------------- */
+
+.social-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.social-list__item {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2);
+  background: color-mix(in oklab, var(--color-surface-raised) 70%, transparent);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+.social-list__item:hover {
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-raised);
+}
+.social-list__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.social-list__icon .perch-social-row { flex: none; }
+.social-list__icon .perch-social-row__item { width: 36px; height: 36px; pointer-events: none; }
+.social-list__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.social-list__text strong { font-size: 14px; font-weight: 600; }
 
 /* ------------- Draft list editor ------------- */
 

@@ -7,6 +7,7 @@ import { SecondaryButton } from "@/components/SecondaryButton";
 import { Badge } from "@/components/Badge";
 import { Flash } from "@/components/Flash";
 import { PhonePreview } from "@/components/PhonePreview";
+import { SocialRow } from "@/components/SocialRow";
 import type { SocialKind, Theme } from "@/db/schema";
 import {
   updateProfileAction,
@@ -301,7 +302,7 @@ function LinksPanel({ links }: { links: EditorLink[] }) {
       )}
 
       <form ref={formRef} action={addAction} className="app-stack" aria-busy={addPending}>
-        <h3 className="app-metric-sm" style={{ margin: 0 }}>Add a link</h3>
+        <h3 className="app-section-head">Add a link</h3>
         {!addState.ok ? <Flash tone="danger">{addState.message}</Flash> : null}
         <Field label="Label" name="label" required maxLength={60} error={addState.ok ? undefined : addState.fieldErrors?.Label || addState.fieldErrors?.label} />
         <Field
@@ -433,55 +434,56 @@ function SocialsPanel({ socials }: { socials: EditorSocial[] }) {
     <section className="app-panel">
       <div className="app-row" style={{ justifyContent: "space-between" }}>
         <h2 className="app-panel__title">Social row</h2>
+        <span style={{ fontSize: 12, color: "var(--color-ink-muted)" }}>
+          Up to {SOCIAL_OPTIONS.length} platforms · {socials.length} added
+        </span>
       </div>
       {socials.length === 0 ? (
-        <p className="app-panel__subtitle">Optional. Add social handles so visitors can find you.</p>
+        <p className="app-panel__subtitle">Optional — add social handles so visitors can find you.</p>
       ) : (
-        <ul className="app-draft-list" aria-label="Social handles">
+        <ul className="social-list" aria-label="Social handles">
           {socials.map((s) => (
-            <li key={s.id} className="app-draft-row">
-              <div className="app-draft-row__body">
-                <div className="app-draft-row__title">
-                  <div>
-                    <strong style={{ textTransform: "capitalize" }}>{s.kind}</strong>
-                    <div className="perch-link-card__host">{s.handle}</div>
-                  </div>
-                  <form action={deleteAction}>
-                    <input type="hidden" name="socialId" value={s.id} />
-                    <SecondaryButton type="submit" tone="danger" size="sm" label="Remove" />
-                  </form>
-                </div>
-              </div>
+            <li key={s.id} className="social-list__item">
+              <span className="social-list__icon" aria-hidden="true">
+                <SocialRow handles={[{ kind: s.kind, handle: s.handle, href: s.href }]} />
+              </span>
+              <span className="social-list__text">
+                <strong style={{ textTransform: "capitalize" }}>{s.kind}</strong>
+                <span className="perch-link-card__host">{s.handle}</span>
+              </span>
+              <form action={deleteAction}>
+                <input type="hidden" name="socialId" value={s.id} />
+                <SecondaryButton type="submit" tone="danger" size="sm" label="Remove" />
+              </form>
             </li>
           ))}
         </ul>
       )}
       {availableOption ? (
         <form action={addAction} className="app-stack" aria-busy={addPending}>
-          <h3 className="app-metric-sm" style={{ margin: 0 }}>Add a handle</h3>
+          <h3 className="app-section-head">Add a handle</h3>
           {!addState.ok ? <Flash tone="danger">{addState.message}</Flash> : null}
           <div className="app-draft-row__fields">
-            <label className="perch-field">
-              <span className="perch-field__label">Platform</span>
-              <select
-                name="kind"
-                defaultValue={availableOption.kind}
-                className="perch-field__input"
-                style={{
-                  border: "1px solid var(--color-border-strong)",
-                  background: "var(--color-surface-sunk)",
-                  borderRadius: "var(--radius-md)",
-                  padding: "var(--space-3)",
-                  fontFamily: "inherit",
-                }}
-              >
-                {SOCIAL_OPTIONS.filter((o) => !takenKinds.has(o.kind)).map((o) => (
-                  <option key={o.kind} value={o.kind}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <div className="perch-field">
+              <label className="perch-field__label" htmlFor="social-kind">
+                <span>Platform</span>
+              </label>
+              <div className="perch-field__input-wrap">
+                <select
+                  id="social-kind"
+                  name="kind"
+                  defaultValue={availableOption.kind}
+                  className="perch-field__input"
+                >
+                  {SOCIAL_OPTIONS.filter((o) => !takenKinds.has(o.kind)).map((o) => (
+                    <option key={o.kind} value={o.kind}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="perch-field__hint" aria-hidden="true" />
+            </div>
             <Field label="Handle" name="handle" required maxLength={60} hint="How you want it announced." />
           </div>
           <Field label="Full URL" name="href" required type="url" hint="https://…" />

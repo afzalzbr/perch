@@ -29,8 +29,14 @@ export const Field = forwardRef<HTMLInputElement | HTMLTextAreaElement, FieldPro
     const hintId = hint ? `${id}-hint` : undefined;
     const describedBy = [errId, hintId].filter(Boolean).join(" ") || undefined;
     const multiline = (rest as TextareaFieldProps).multiline === true;
+    // Keep the `multiline` prop from leaking onto the actual DOM element.
+    const { multiline: _m, ...passthrough } = rest as { multiline?: boolean };
+    void _m;
+    const classes = ["perch-field", error ? "is-error" : "", multiline ? "perch-field--multiline" : ""]
+      .filter(Boolean)
+      .join(" ");
     return (
-      <div className={`perch-field ${error ? "is-error" : ""}`}>
+      <div className={classes}>
         <label className="perch-field__label" htmlFor={id}>
           <span>{label}</span>
           {required ? (
@@ -50,7 +56,7 @@ export const Field = forwardRef<HTMLInputElement | HTMLTextAreaElement, FieldPro
               aria-invalid={error ? true : undefined}
               aria-describedby={describedBy}
               aria-required={required ? true : undefined}
-              {...(rest as TextareaHTMLAttributes<HTMLTextAreaElement>)}
+              {...(passthrough as TextareaHTMLAttributes<HTMLTextAreaElement>)}
             />
           ) : (
             <input
@@ -60,7 +66,7 @@ export const Field = forwardRef<HTMLInputElement | HTMLTextAreaElement, FieldPro
               aria-invalid={error ? true : undefined}
               aria-describedby={describedBy}
               aria-required={required ? true : undefined}
-              {...(rest as InputHTMLAttributes<HTMLInputElement>)}
+              {...(passthrough as InputHTMLAttributes<HTMLInputElement>)}
             />
           )}
         </div>
