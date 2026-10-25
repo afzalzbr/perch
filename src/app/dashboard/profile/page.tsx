@@ -20,23 +20,32 @@ export default async function ProfileEditorPage() {
 
   return (
     <section className="app-stack">
-      <div className="app-row" style={{ justifyContent: "space-between" }}>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <h1 className="app-panel__title" style={{ margin: 0 }}>
+      <header className="page-hero">
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+          <span className="page-hero__eyebrow">Editing</span>
+          <h1 className="page-hero__title">
             Your page
-          </h1>
-          {profile.publishedAt ? (
-            draftAhead ? (
-              <Badge tone="warning" label="Draft ahead" />
+            {profile.publishedAt ? (
+              draftAhead ? (
+                <Badge tone="warning" label="Draft ahead" />
+              ) : (
+                <Badge tone="success" label="Published" />
+              )
             ) : (
-              <Badge tone="success" label="Published" />
-            )
-          ) : (
-            <Badge tone="neutral" label="Not published yet" />
-          )}
+              <Badge tone="neutral" label="Not published yet" />
+            )}
+          </h1>
+          <p className="page-hero__subtitle">
+            Edit freely — nothing goes live until you publish. The phone on the right mirrors exactly what visitors will see.
+          </p>
         </div>
-        <code className="app-url">{publicUrlFor(profile.slug).replace(/^https?:\/\//, "")}</code>
-      </div>
+        <div className="page-hero__right">
+          <span className="page-hero__eyebrow">Your public URL</span>
+          <a className="app-url" href={publicUrlFor(profile.slug)} target="_blank" rel="noopener noreferrer">
+            {publicUrlFor(profile.slug).replace(/^https?:\/\//, "")} →
+          </a>
+        </div>
+      </header>
 
       <EditorClient
         profile={{

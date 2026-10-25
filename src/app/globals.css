@@ -134,18 +134,40 @@ html {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "cv11", "ss01", "ss03";
 }
 
 body {
-  background: var(--color-surface-page);
   color: var(--color-ink-primary);
   font-family: var(--font-sans);
   font-size: 15px;
   line-height: 22px;
   min-height: 100vh;
+  /* A soft warm wash — brand-tinted glow at top-right, accent at bottom-left, over the paper. */
+  background:
+    radial-gradient(1200px 600px at 90% -10%, color-mix(in oklab, var(--color-brand-500) 10%, transparent), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, color-mix(in oklab, var(--color-accent-500) 10%, transparent), transparent 60%),
+    var(--color-surface-page);
+  background-attachment: fixed;
 }
 
+/* A barely-there grain so flat warm fields feel like paper, not plastic. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.025 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* Keep content above the grain layer. */
+.perch-root, .app-shell, .auth-shell, .public-page { position: relative; z-index: 1; }
+
 a { color: inherit; }
+::selection { background: color-mix(in oklab, var(--color-brand-500) 30%, transparent); color: var(--color-ink-primary); }
 
 /* -------------------- Perch bundle styles (from design system) ------------------- */
 
@@ -168,40 +190,63 @@ a { color: inherit; }
   font: 600 15px/20px var(--font-sans);
   letter-spacing: 0.005em;
   cursor: pointer;
-  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 220ms ease, transform 120ms ease;
   text-decoration: none;
   user-select: none;
+  position: relative;
+  isolation: isolate;
 }
 .perch-btn:focus-visible {
   outline: none;
   box-shadow: var(--shadow-focus);
   border-color: var(--color-focus-ring);
 }
+
+/* Primary — brand gradient with a subtle inner highlight that catches the eye without shouting. */
 .perch-btn--primary {
-  background: var(--color-brand-500);
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--color-brand-500) 88%, white) 0%,
+    var(--color-brand-500) 55%,
+    var(--color-brand-600) 100%);
   color: var(--color-ink-inverse);
+  box-shadow:
+    0 1px 0 color-mix(in oklab, white 20%, transparent) inset,
+    0 1px 2px rgba(31, 26, 18, 0.1),
+    0 6px 16px -8px color-mix(in oklab, var(--color-brand-500) 70%, transparent);
 }
-.perch-btn--primary:hover { background: var(--color-brand-600); }
+.perch-btn--primary:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 color-mix(in oklab, white 24%, transparent) inset,
+    0 2px 4px rgba(31, 26, 18, 0.12),
+    0 10px 24px -10px color-mix(in oklab, var(--color-brand-500) 85%, transparent);
+}
 .perch-btn--primary:active { transform: translateY(1px); }
+
 .perch-btn--secondary {
-  background: transparent;
+  background: color-mix(in oklab, var(--color-surface-raised) 60%, transparent);
   color: var(--color-ink-primary);
   border-color: var(--color-border-strong);
+  backdrop-filter: blur(6px);
 }
 .perch-btn--secondary:hover {
   background: var(--color-surface-raised);
   border-color: var(--color-ink-secondary);
+  transform: translateY(-1px);
 }
+
 .perch-btn--danger {
   background: transparent;
   color: var(--color-danger-500);
   border-color: var(--color-danger-500);
 }
 .perch-btn--danger:hover { background: var(--color-danger-100); }
+
 .perch-btn[disabled],
 .perch-btn[aria-disabled="true"] {
   opacity: 0.55;
   cursor: not-allowed;
+  transform: none !important;
 }
 .perch-btn--small { min-height: 36px; padding: 0 var(--space-4); font-size: 13px; }
 .perch-btn--block { width: 100%; }
@@ -401,10 +446,14 @@ textarea.perch-field__input { padding: 10px 0; resize: vertical; min-height: 72p
   --phone-h: 640px;
   width: var(--phone-w);
   height: var(--phone-h);
-  border-radius: var(--radius-xl);
-  background: var(--color-surface-sunk);
-  box-shadow: var(--shadow-lg), inset 0 0 0 1px var(--color-border-strong);
-  padding: 14px;
+  border-radius: 32px;
+  background: linear-gradient(160deg, var(--color-surface-sunk), color-mix(in oklab, var(--color-ink-primary) 10%, var(--color-surface-sunk)));
+  box-shadow:
+    0 30px 60px -20px rgba(31, 26, 18, 0.35),
+    0 10px 20px -10px rgba(31, 26, 18, 0.25),
+    inset 0 0 0 1px color-mix(in oklab, var(--color-ink-primary) 20%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 15%, transparent);
+  padding: 14px 10px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -452,11 +501,22 @@ textarea.perch-field__input { padding: 10px 0; resize: vertical; min-height: 72p
   background: transparent;
   border-radius: var(--radius-pill);
   text-decoration: none;
-  transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
+  transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
-.perch-social-row__item:hover { color: var(--color-ink-primary); background: var(--color-surface-raised); }
+.perch-social-row__item:hover {
+  color: var(--color-brand-500);
+  background: color-mix(in oklab, var(--color-brand-500) 10%, transparent);
+  transform: translateY(-1px);
+}
 .perch-social-row__item:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
-.perch-social-row__item svg { width: 20px; height: 20px; stroke-width: 1.5; fill: none; stroke: currentColor; }
+.perch-social-row__item svg {
+  width: 20px; height: 20px;
+  stroke-width: 1.5;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 
 /* ------------- Layout chrome ------------- */
 
@@ -474,34 +534,93 @@ textarea.perch-field__input { padding: 10px 0; resize: vertical; min-height: 72p
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  padding-bottom: var(--space-4);
-  border-bottom: 1px solid var(--color-border-soft);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-xl);
+  background: color-mix(in oklab, var(--color-surface-raised) 65%, transparent);
+  border: 1px solid var(--color-border-soft);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: var(--space-4);
+  z-index: 10;
 }
 
 .app-brand {
   display: inline-flex;
   align-items: baseline;
-  gap: var(--space-2);
+  gap: 10px;
   font-family: var(--font-display);
   font-size: 24px;
   font-weight: 500;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
+  text-decoration: none;
+  color: var(--color-ink-primary);
 }
-.app-brand__dot { width: 10px; height: 10px; border-radius: 999px; background: var(--color-brand-500); display: inline-block; }
+.app-brand__dot {
+  width: 10px; height: 10px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, color-mix(in oklab, var(--color-brand-500) 60%, white), var(--color-brand-500) 70%);
+  display: inline-block;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-brand-500) 18%, transparent);
+}
 
-.app-nav { display: inline-flex; gap: var(--space-2); align-items: center; }
+.app-nav { display: inline-flex; gap: 2px; align-items: center; }
 .app-nav a {
-  padding: 10px var(--space-3);
-  border-radius: var(--radius-md);
+  padding: 10px var(--space-4);
+  border-radius: var(--radius-pill);
   color: var(--color-ink-secondary);
   text-decoration: none;
   font-weight: 600;
   font-size: 13px;
+  transition: color 160ms ease, background-color 160ms ease;
+  position: relative;
 }
+.app-nav a:hover { color: var(--color-ink-primary); background: color-mix(in oklab, var(--color-surface-sunk) 70%, transparent); }
 .app-nav a[aria-current="page"] {
-  background: var(--color-brand-100);
   color: var(--color-brand-500);
+  background: var(--color-brand-100);
 }
+.app-nav a[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 50%; bottom: -8px;
+  transform: translateX(-50%);
+  width: 4px; height: 4px;
+  border-radius: 999px;
+  background: var(--color-brand-500);
+}
+
+/* Editorial hero at the top of a page */
+.page-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+}
+.page-hero__title {
+  margin: 0;
+  font: 500 36px/40px var(--font-display);
+  letter-spacing: -0.02em;
+  color: var(--color-ink-primary);
+  display: inline-flex;
+  gap: var(--space-3);
+  align-items: baseline;
+}
+.page-hero__subtitle {
+  margin: 0;
+  color: var(--color-ink-secondary);
+  font-size: 14px;
+  line-height: 20px;
+  max-width: 60ch;
+}
+.page-hero__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font: 600 11px/14px var(--font-sans);
+  color: var(--color-ink-muted);
+}
+.page-hero__right { display: flex; flex-direction: column; align-items: flex-end; gap: var(--space-2); }
 
 .app-footer {
   padding: var(--space-6) 0;
@@ -515,23 +634,41 @@ textarea.perch-field__input { padding: 10px 0; resize: vertical; min-height: 72p
 }
 
 .app-panel {
-  background: var(--color-surface-raised);
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--color-surface-raised) 100%, transparent) 0%, color-mix(in oklab, var(--color-surface-raised) 88%, transparent) 100%);
   border: 1px solid var(--color-border-soft);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   padding: var(--space-6);
-  box-shadow: var(--shadow-sm);
+  box-shadow:
+    0 1px 0 color-mix(in oklab, white 10%, transparent) inset,
+    0 1px 2px rgba(31, 26, 18, 0.04),
+    0 20px 40px -24px rgba(31, 26, 18, 0.12);
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
+  position: relative;
+  overflow: hidden;
+}
+/* A hairline brand glow along the top edge — subtle, only visible if you look. */
+.app-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    color-mix(in oklab, var(--color-brand-500) 40%, transparent) 50%,
+    transparent 100%);
+  opacity: 0.4;
 }
 
 .app-panel__title {
-  font: 600 22px/28px var(--font-sans);
-  letter-spacing: -0.005em;
+  font: 500 22px/28px var(--font-display);
+  letter-spacing: -0.015em;
   color: var(--color-ink-primary);
   margin: 0;
 }
-.app-panel__subtitle { color: var(--color-ink-secondary); font-size: 13px; margin: 0; }
+.app-panel__subtitle { color: var(--color-ink-secondary); font-size: 13px; margin: 0; line-height: 20px; }
 
 .app-stack { display: flex; flex-direction: column; gap: var(--space-4); }
 .app-row { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; }

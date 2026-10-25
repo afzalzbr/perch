@@ -37,9 +37,9 @@ export function SignInForm({ mode, canSignUp }: { mode: "signin" | "signup"; can
         label={mode === "signup" ? (pending ? "Creating…" : "Create account") : pending ? "Signing in…" : "Sign in"}
         block
       />
-      {mode === "signin" && canSignUp ? (
+      {mode === "signin" ? (
         <p style={{ textAlign: "center", fontSize: 13, color: "var(--color-ink-secondary)" }}>
-          First time here? <Link href="/sign-in?signup=1">Set up Perch</Link>.
+          First time here? <Link href="/sign-up">Create your Perch</Link>.
         </p>
       ) : null}
       {mode === "signup" ? (
