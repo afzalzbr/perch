@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { db, schema } from "@/db";
-import { eq, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import { getStorage } from "@/lib/storage";
 import { LinkCard } from "@/components/LinkCard";
 import { SocialRow } from "@/components/SocialRow";
 import { Avatar } from "@/components/Avatar";
+import { Mark } from "@/components/Mark";
 
 export const dynamic = "force-dynamic";
 
@@ -43,9 +44,13 @@ export default async function PublicPage({ params }: { params: Promise<{ slug: s
   return (
     <main className={`public-page perch-theme-${snap.theme}`} data-theme={snap.theme}>
       <header className="public-page__header">
-        <Avatar name={snap.displayName} src={avatarUrl} size="lg" ring />
-        <h1 className="public-page__name">{snap.displayName}</h1>
-        <span className="public-page__handle">@{snap.slug}</span>
+        <span className="public-page__avatar-wrap">
+          <Avatar name={snap.displayName} src={avatarUrl} size="lg" />
+        </span>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)", alignItems: "center" }}>
+          <h1 className="public-page__name">{snap.displayName}</h1>
+          <span className="public-page__handle">perch.app/{snap.slug}</span>
+        </div>
         {snap.bio ? <p className="public-page__bio">{snap.bio}</p> : null}
       </header>
       <nav className="public-page__links" aria-label={`Links from ${snap.displayName}`}>
@@ -64,6 +69,7 @@ export default async function PublicPage({ params }: { params: Promise<{ slug: s
         <SocialRow handles={snap.socials} />
       </div>
       <footer className="public-page__footer">
+        <Mark size="sm" />
         <a href="/sign-in">Made with Perch</a>
       </footer>
       {cfToken ? (

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { requireOwner } from "@/domain/auth";
 import { signOutAction } from "../sign-in/actions";
 import { AppNav } from "./nav.client";
+import { Mark } from "@/components/Mark";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <div className="app-shell">
       <header className="app-header">
         <Link href="/dashboard" className="app-brand" aria-label="Perch dashboard">
-          <span className="app-brand__dot" aria-hidden="true" />
+          <Mark size="sm" />
           <span>Perch</span>
         </Link>
         <AppNav />
